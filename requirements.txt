@@ -1,0 +1,6 @@
+# The only dependency you need.
+requests>=2.28
+
+# Optional: only if you want PDF copies of pages (run with --pdf).
+# On macOS this also needs: brew install pango gdk-pixbuf libffi
+# weasyprint>=60.0
