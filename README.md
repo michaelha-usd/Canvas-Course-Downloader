@@ -23,9 +23,8 @@ Open the Terminal in VS Code (menu: **Terminal → New Terminal**) and paste:
 python3 -m pip install requests
 ```
 
-> That's the only thing you need. Pages are saved as HTML (which opens in any
-> web browser). PDF copies are optional and off by default — see the note at
-> the bottom if you ever want them.
+> That's the only thing you need. Pages are saved as HTML, which opens in any
+> web browser.
 
 ### 2. Get your Canvas access token
 
@@ -123,7 +122,6 @@ Add any of these to the end of your command:
 | `--active-only` | (all-courses only) Skip old/finished courses |
 | `--list-only` | (all-courses only) Just show the courses, download nothing |
 | `--out FOLDER` | Save somewhere other than `canvas_export` |
-| `--pdf` | Also make PDF copies (optional; needs extra setup — see bottom) |
 
 ---
 
@@ -144,22 +142,6 @@ and open the folder that contains the scripts, then open a new Terminal.
 
 **A yellow "NotOpenSSLWarning / LibreSSL" message**
 Harmless — ignore it. It doesn't affect the download.
-
----
-
-## Optional: PDF copies
-
-By default the script saves pages as **HTML**, which opens in any web browser
-and is all most people need. If you specifically want PDF copies too, it takes
-a bit of extra setup:
-
-```
-python3 -m pip install weasyprint
-brew install pango gdk-pixbuf libffi
-```
-
-Then add `--pdf` to any command. If the PDF libraries aren't installed, the
-script just skips PDFs and still saves all the HTML.
 
 ---
 
