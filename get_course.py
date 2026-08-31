@@ -178,6 +178,10 @@ def sanitize(name, fallback="untitled"):
     return (name or fallback)[:150]
 
 
+class NotFound(Exception):
+    """Raised on a 404 — usually a course feature that's turned off."""
+
+
 class CanvasClient:
     def __init__(self, base_url, token, delay=0.15):
         self.base_url = base_url.rstrip("/")
@@ -189,14 +193,17 @@ class CanvasClient:
         full = url if url.startswith("http") else f"{self.base_url}/api/v1{url}"
         resp = self.session.get(full, params=params, timeout=120, stream=stream)
         if resp.status_code == 401:
+            # A bad/expired token affects everything, so stop clearly.
             raise SystemExit(
                 "ERROR 401 Unauthorized: the token was rejected. Check it's valid "
                 "and that --base-url matches your school."
             )
         if resp.status_code == 404:
-            raise SystemExit(
-                f"ERROR 404 Not Found: {full}\nCheck the course ID and your access."
-            )
+            # A 404 usually just means a course has that feature turned off
+            # (e.g. Pages or Files disabled). Raise a catchable error so the
+            # caller can treat it as "empty" and keep going, rather than
+            # aborting the whole course.
+            raise NotFound(f"404 Not Found: {full}")
         resp.raise_for_status()
         time.sleep(self.delay)
         return resp
@@ -217,8 +224,11 @@ class CanvasClient:
             next_url = resp.links.get("next", {}).get("url")
 
     def get_modules_with_items(self, cid):
-        return list(self.paginated(f"/courses/{cid}/modules",
-                                   params={"include[]": "items"}))
+        try:
+            return list(self.paginated(f"/courses/{cid}/modules",
+                                       params={"include[]": "items"}))
+        except NotFound:
+            return []  # Modules feature is turned off for this course.
 
     def get_page(self, cid, page_url):
         return self._get(f"/courses/{cid}/pages/{page_url}").json()
@@ -240,7 +250,10 @@ class CanvasClient:
         return self._get(f"/courses/{cid}/files/{fid}").json()
 
     def get_all_pages(self, cid):
-        return list(self.paginated(f"/courses/{cid}/pages"))
+        try:
+            return list(self.paginated(f"/courses/{cid}/pages"))
+        except NotFound:
+            return []  # Pages feature is turned off for this course.
 
     def get_course(self, cid, syllabus=False):
         params = {"include[]": "syllabus_body"} if syllabus else None
