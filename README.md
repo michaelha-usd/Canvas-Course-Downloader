@@ -21,6 +21,12 @@ Pick whichever you prefer — they do the same thing. The notebook is the simple
 if you'd rather not use a terminal; the scripts are handy if you like the
 command line.
 
+> **Important:** `get_course.py` is the engine — it does the actual work. The
+> notebook and `get_all_courses.py` are just friendly front-ends that call into
+> it, so **`get_course.py` must always be present in the same folder.** The
+> notebook will **not** run on its own. Easiest is to download the whole
+> project (green **Code → Download ZIP** button) so you get every file together.
+
 ---
 
 ## Requirements
@@ -65,8 +71,10 @@ in the course's web address: `https://sandiego.instructure.com/courses/`**`12345
 
 ## Option 1 — The notebook (easiest)
 
-1. Open `canvas_downloader.ipynb` in Jupyter (or any notebook editor). Make sure
-   it's in the **same folder** as `get_course.py`.
+1. Open `canvas_downloader.ipynb` in Jupyter (or any notebook editor). It **must
+   be in the same folder as `get_course.py`** — the notebook imports that file to
+   do the work and will error with `ModuleNotFoundError: No module named
+   'get_course'` if it's missing.
 2. Run the cells from top to bottom.
 3. In the settings cell, set:
    - `MODE` → `"one"` for a single course, or `"all"` for every course
@@ -191,3 +199,8 @@ Harmless — ignore it. It doesn't affect the download.
 
 **`401 Unauthorized`**
 Your token is wrong, expired, or was revoked. Generate a fresh one and try again.
+
+**`ModuleNotFoundError: No module named 'get_course'`** (notebook or all-courses)
+`get_course.py` isn't in the same folder. The notebook and `get_all_courses.py`
+both rely on it. Put `get_course.py` next to whichever one you're running (the
+simplest fix is to download the whole project so all files stay together).
